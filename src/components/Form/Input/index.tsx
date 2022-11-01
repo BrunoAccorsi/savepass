@@ -13,7 +13,7 @@ import {
 } from './styles';
 
 interface Props extends TextInputProps {
-  control: Control;
+  Control: Control<any>;
   name: string;
   title: string;
   error: string;
@@ -21,7 +21,7 @@ interface Props extends TextInputProps {
 
 export function Input({
   name,
-  control,
+  Control,
   title,
   error,
   secureTextEntry,
@@ -35,7 +35,7 @@ export function Input({
       {error && <Error>{error}</Error>}
       <Controller
         name={name}
-        control={control}
+        control={Control}
         render={({ field: { onChange, value } }) => (
           <InputContainer>
             <FormInput

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { RFValue } from 'react-native-responsive-fontsize';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -45,7 +45,7 @@ export function RegisterLoginData() {
     formState: {
       errors
     }
-  } = useForm({
+  } = useForm<FormData>({
     resolver: yupResolver(schema)
   });
 
@@ -57,7 +57,16 @@ export function RegisterLoginData() {
 
     const dataKey = '@savepass:logins';
 
-    // Save data on AsyncStorage and navigate to 'Home' screen
+    const storedData = await AsyncStorage.getItem(dataKey);
+    const parsedData = storedData ? JSON.parse(storedData) : [];
+
+    const newData = [
+      ...parsedData,
+      newLoginData
+    ]
+
+    AsyncStorage.setItem(dataKey, JSON.stringify(newData));
+    navigate('Home');
   }
 
   return (
@@ -73,11 +82,8 @@ export function RegisterLoginData() {
             testID="service-name-input"
             title="Nome do serviço"
             name="service_name"
-            error={
-              // Replace here with real content
-              'Has error ? show error message'
-            }
-            control={control}
+            error={` ${errors.service_name ? errors.service_name.message : ''}`}
+            Control={control}
             autoCapitalize="sentences"
             autoCorrect
           />
@@ -85,11 +91,8 @@ export function RegisterLoginData() {
             testID="email-input"
             title="E-mail ou usuário"
             name="email"
-            error={
-              // Replace here with real content
-              'Has error ? show error message'
-            }
-            control={control}
+            error={` ${errors.email ? errors.email.message : ''}`}
+            Control={control}
             autoCorrect={false}
             autoCapitalize="none"
             keyboardType="email-address"
@@ -99,10 +102,9 @@ export function RegisterLoginData() {
             title="Senha"
             name="password"
             error={
-              // Replace here with real content
-              'Has error ? show error message'
+              ` ${errors.password ? errors.password.message : ''}`
             }
-            control={control}
+            Control={control}
             secureTextEntry
           />
 
